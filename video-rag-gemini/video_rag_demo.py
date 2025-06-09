@@ -79,14 +79,6 @@ def initialize_gemini():
         st.error(f"Failed to initialize Gemini API: {str(e)}")
         return False
 
-def download_video_from_url(url: str) -> Optional[str]:
-    """Download video from URL and save to temporary file"""
-    try:
-        # Validate URL
-        parsed_url = urlparse(url)
-        if not parsed_url.scheme or not parsed_url.netloc:
-            st.error("Please provide a valid URL")
-            return None
         
         # Show progress
         progress_bar = st.progress(0)
@@ -139,8 +131,8 @@ def download_video_from_url(url: str) -> Optional[str]:
         st.error(f"Unexpected error: {str(e)}")
         return None
 
-def upload_video_to_gemini(video_path: str):
-    """Upload video to Gemini API"""
+def upload_video_to_gemini(video_file_bytes, file_name: str):
+    """Upload video file bytes to Gemini API"""
     try:
         status_text = st.empty()
         progress_bar = st.progress(0)
@@ -148,9 +140,16 @@ def upload_video_to_gemini(video_path: str):
         status_text.text("Uploading video to Gemini API...")
         progress_bar.progress(0.3)
         
-        # Upload video file
-        video_file = genai.upload_file(path=video_path)
-        progress_bar.progress(0.6)
+        # Create temporary file from uploaded bytes
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(file_name)[1])
+        temp_file.write(video_file_bytes)
+        temp_file.close()
+        
+        progress_bar.progress(0.5)
+        
+        # Upload video file to Gemini
+        video_file = genai.upload_file(path=temp_file.name)
+        progress_bar.progress(0.7)
         
         status_text.text("Processing video...")
         
@@ -162,10 +161,21 @@ def upload_video_to_gemini(video_path: str):
         
         if video_file.state.name == "FAILED":
             st.error("Video processing failed")
+            # Clean up temp file
+            try:
+                os.unlink(temp_file.name)
+            except:
+                pass
             return None
         
         progress_bar.progress(1.0)
         status_text.text("Video uploaded and processed successfully!")
+        
+        # Clean up temp file
+        try:
+            os.unlink(temp_file.name)
+        except:
+            pass
         
         return video_file
         
@@ -196,7 +206,7 @@ def main():
     
     st.markdown("""
     Welcome to the Video RAG Demo! This application allows you to:
-    - Upload a video via URL
+    - Upload a video file directly
     - Ask questions about the video content
     - Get AI-powered responses using Google's Gemini API
     """)
@@ -235,7 +245,7 @@ def main():
         st.markdown("### 📋 Instructions")
         st.markdown("""
         1. Enter your Gemini API key above
-        2. Provide a video URL
+        2. Upload a video file
         3. Wait for the video to be processed
         4. Start asking questions about the video!
         """)
@@ -253,45 +263,38 @@ def main():
         st.warning("⚠️ Please enter your Gemini API key in the sidebar to continue.")
         return
     
-    # Video URL input
-    st.header("📹 Video Input")
-    video_url = st.text_input(
-        "Video URL",
-        placeholder="https://example.com/video.mp4",
-        help="Enter a direct URL to a video file (MP4, AVI, MOV supported)"
+    # Video file upload
+    st.header("📹 Video Upload")
+    uploaded_file = st.file_uploader(
+        "Choose a video file",
+        type=['mp4', 'avi', 'mov', 'mkv', 'webm'],
+        help="Upload a video file (MP4, AVI, MOV, MKV, WEBM supported)"
     )
     
     # Process video button
-    if st.button("🚀 Process Video", disabled=not video_url):
-        if video_url:
+    if st.button("🚀 Process Video", disabled=not uploaded_file):
+        if uploaded_file:
             with st.spinner("Processing video..."):
-                # Download video
-                video_path = download_video_from_url(video_url)
+                # Get file bytes
+                video_bytes = uploaded_file.read()
                 
-                if video_path:
-                    # Upload to Gemini
-                    video_file = upload_video_to_gemini(video_path)
+                # Upload to Gemini
+                video_file = upload_video_to_gemini(video_bytes, uploaded_file.name)
+                
+                if video_file:
+                    st.session_state['video_file'] = video_file
+                    st.session_state['video_name'] = uploaded_file.name
+                    st.success("🎉 Video processed successfully! You can now ask questions about it.")
                     
-                    if video_file:
-                        st.session_state['video_file'] = video_file
-                        st.session_state['video_url'] = video_url
-                        st.success("🎉 Video processed successfully! You can now ask questions about it.")
-                        
-                        # Display video info
-                        st.info(f"📊 Video Info: {video_file.display_name}")
-                    
-                    # Clean up temporary file
-                    try:
-                        os.unlink(video_path)
-                    except:
-                        pass
-    
+                    # Display video info
+                    st.info(f"📊 Video Info: {video_file.display_name}")
+
     # Chat interface
     if st.session_state.get('video_file'):
         st.header("💬 Chat with Your Video")
         
         # Display current video
-        st.info(f"🎥 Current video: {st.session_state.get('video_url', 'Unknown')}")
+        st.info(f"🎥 Current video: {st.session_state.get('video_name', 'Unknown')}")
         
         # Initialize chat history
         if 'chat_history' not in st.session_state:
@@ -375,4 +378,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

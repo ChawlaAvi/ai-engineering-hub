@@ -1,10 +1,10 @@
 # 🎥 Video RAG with Gemini API
 
-A Streamlit demo application that enables you to chat with videos using Google's Gemini API. Upload a video via URL and ask questions about its content to get AI-powered responses.
+A Streamlit demo application that enables you to chat with videos using Google's Gemini API. Upload a video file directly and ask questions about its content to get AI-powered responses.
 
 ## ✨ Features
 
-- **Video URL Input**: Accept videos from direct URLs (MP4, AVI, MOV formats)
+- **Video File Upload**: Upload videos directly from your device (MP4, AVI, MOV, MKV, WEBM formats)
 - **AI-Powered Analysis**: Uses Google Gemini API for video understanding
 - **Interactive Chat**: Ask questions and get detailed responses about video content
 - **Multiple Models**: Support for different Gemini models (Pro, Flash, etc.)
@@ -41,7 +41,7 @@ streamlit run video_rag_demo.py
 
 1. **Configure API Key**: Enter your Gemini API key in the sidebar
 2. **Select Model**: Choose your preferred Gemini model
-3. **Input Video URL**: Provide a direct URL to a video file
+3. **Input Video File**: Provide a video file from your device
 4. **Process Video**: Click "Process Video" and wait for upload/processing
 5. **Start Chatting**: Ask questions about the video content
 6. **View Responses**: Get detailed AI-generated responses about the video
@@ -51,6 +51,8 @@ streamlit run video_rag_demo.py
 - MP4 (recommended)
 - AVI
 - MOV
+- MKV
+- WEBM
 - Other formats supported by Gemini API
 
 ## 🔧 Configuration Options
@@ -61,7 +63,7 @@ streamlit run video_rag_demo.py
 - **gemini-1.0-pro**: Basic model
 
 ### Video Requirements
-- Direct URL access (no authentication required)
+- Direct file upload from your device
 - Reasonable file size (check Gemini API limits)
 - Supported video formats
 
@@ -80,7 +82,7 @@ Try asking questions like:
 ### Architecture
 - **Frontend**: Streamlit for the web interface
 - **AI Engine**: Google Gemini API for video understanding
-- **Video Processing**: Automatic download and upload to Gemini
+- **Video Processing**: Direct file upload and processing with Gemini
 - **State Management**: Streamlit session state for chat history
 
 ### API Integration
@@ -112,9 +114,9 @@ Try asking questions like:
    - Check if the API key has proper permissions
 
 2. **"Failed to download video"**
-   - Ensure the URL is a direct link to a video file
-   - Check if the video is publicly accessible
-   - Verify the video format is supported
+   - Ensure you have selected a valid video file
+   - Check if the video format is supported
+   - Verify the file size is within limits
 
 3. **"Video processing failed"**
    - Video might be too large or in unsupported format
@@ -123,6 +125,7 @@ Try asking questions like:
 4. **Slow processing**
    - Large videos take more time to process
    - Consider using gemini-1.5-flash for faster processing
+   - Try compressing the video file to reduce size
 
 ## 📚 Resources
 
@@ -134,4 +137,3 @@ Try asking questions like:
 ---
 
 **Built with ❤️ using Streamlit and Google Gemini API**
-
