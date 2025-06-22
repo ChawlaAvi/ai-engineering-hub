@@ -1,0 +1,26 @@
+# Core frameworks
+crewai>=0.80.0
+langwatch-scenario>=0.1.0
+
+# LLM providers
+openai>=1.0.0
+litellm>=1.0.0
+
+# Additional dependencies
+python-dotenv>=1.0.0
+pydantic>=2.0.0
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
+rich>=13.0.0
+click>=8.0.0
+jupyter>=1.0.0
+pandas>=2.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Development dependencies
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+mypy>=1.5.0
+
