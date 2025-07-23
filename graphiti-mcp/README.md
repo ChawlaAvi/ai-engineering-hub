@@ -56,7 +56,7 @@ docker compose up
 **Note**: When running the Docker Compose for both the Neo4j database and the Graphiti MCP server, if you encounter the `No server info found` error in the MCP logs, try running the server directly using Python to troubleshoot the issue.
 
 ```bash
-python graphiti_mcp_server.py --transport sse
+uv run graphiti_mcp_server.py --model gpt-4.1-mini --transport sse
 ```
 
 ### Integrate MCP Clients

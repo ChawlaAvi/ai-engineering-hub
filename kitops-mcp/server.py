@@ -87,7 +87,7 @@ def pull_and_unpack_modelkit(
     Args:
         working_dir: The absolute or relative path to the directory where the ModelKit should be unpacked.
         modelkit_tag: The tag of the ModelKit to pull in the format 'registry/namespace/repository:tag'.
-        filters: Optional list of components to download. Valid values are 'dataset', 'code', 'model', and 'docs'.
+        filters: Optional list of components to download. Valid values are 'datasets', 'code', 'model', and 'docs'.
                 If not provided, all components will be downloaded.
 
     Returns:

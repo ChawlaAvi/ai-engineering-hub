@@ -3,14 +3,15 @@ import joblib
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
 
-# Define file paths
+# --- Define file paths ---
 csv_file = "data/sample.csv"
 model_file = "model/model.pkl"
 
-# --- Pre-run Check ---
+# --- Pre-run Check for Data File ---
 # Check if the required CSV file exists before proceeding.
 if not os.path.exists(csv_file):
     print(f"Error: Data file '{csv_file}' not found.")
+    # For this to work, ensure you have a 'data' directory with 'sample.csv' inside.
     exit()
 
 # --- Data Loading ---
@@ -33,9 +34,19 @@ print("Training the model...")
 model = LogisticRegression()
 model.fit(X, y)
 
+# --- Check for Model ---
+# Get the model folder path from the model file.
+model_dir = os.path.dirname(model_file)
+
+# Create the model folder if it does not exist.
+# The 'exist_ok=True' argument prevents an error if it already exists.
+if not os.path.exists(model_dir):
+    print(f"Directory '{model_dir}' not found. Creating it...")
+    os.makedirs(model_dir, exist_ok=True)
+
 # --- Model Saving ---
 # Serialize the trained model object and save it to a file.
-# This allows to load and use the model later without retraining.
+# This allows you to load and use the model later without retraining.
 print(f"Saving the trained model to '{model_file}'...")
 joblib.dump(model, model_file)
 
